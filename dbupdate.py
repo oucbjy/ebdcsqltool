@@ -181,5 +181,5 @@ def getTime():
     return time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(time.time())) + " "
 
 basePath = os.getcwd()
-basePath = "D:\\2021\\202101\\14"
+# basePath = "D:\\2021\\202101\\14"
 genSqlCmd(basePath)
