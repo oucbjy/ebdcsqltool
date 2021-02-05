@@ -39,6 +39,13 @@ def copyFile2BasePath(allFileList, basePath, log):
         log.write(getTime() + "开始生成" + x)
         log.write('\n')
         num = num + 1
+        # 只判断以sql结尾的，其他直接复制
+        if x.endswith(".sql") == False:
+            log.write(getTime() + "不是sql文件，直接复制" + x)
+            log.write('\n')
+            fileName = x.split('\\')[-1]
+            shutil.copyfile(x, basePath + "\\dbupdate\\" + fileName)
+            continue
         try:
             idx = str(num)
             if num < 10:
@@ -130,7 +137,8 @@ def sftp(basePath, log):
 
 def genSqlCmd(basePath):
     f = open(basePath + "\\genHis.log", "a")
-    f.write("==================================================" + getTime() + "开始==================================================")
+    f.write(
+        "==================================================" + getTime() + "开始==================================================")
     f.write('\n')
     f.write("basePath:" + basePath)
     f.write('\n')
@@ -148,13 +156,17 @@ def genSqlCmd(basePath):
     allFileList = getFileAll(basePath + "\\origin")
     f.write("获得origin文件列表")
     f.write('\n')
-    # 创建data目录，并将origin文件夹下的文件全部复制到当前目录下
+    # 创建dbupdate目录，并将origin文件夹下的文件全部复制到当前目录下
     copyFile2BasePath(allFileList, basePath, f)
     f.write("创建dbupdate目录，并将origin文件夹下的文件全部复制到当前目录下")
     f.write('\n')
     # 修改data下面文件编码格式
     dataFileList = getFileAll(basePath + "\\dbupdate")
     for x in dataFileList:
+        if x.endswith(".sh") == False:
+            f.write("不是sh文件，跳过" + x)
+            f.write('\n')
+            continue
         turn(x)
         f.write("编码格式转化" + x + "完成")
         f.write('\n')
@@ -173,12 +185,15 @@ def genSqlCmd(basePath):
     f.write(getTime() + "数据库更新包生成成功")
     print(getTime() + "数据库更新包生成成功")
     f.write('\n')
-    f.write("--------------------------------------------------" + getTime() + "结束--------------------------------------------------")
+    f.write(
+        "--------------------------------------------------" + getTime() + "结束--------------------------------------------------")
     f.write('\n')
     f.close
 
+
 def getTime():
     return time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(time.time())) + " "
+
 
 basePath = os.getcwd()
 # basePath = "D:\\2021\\202101\\14"
